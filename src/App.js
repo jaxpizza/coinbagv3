@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import axios from 'axios';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import BlogPage from './BlogPage';
-import SocialsDropdown from './SocialsDropdown';
 import Header from './components/Header';
 
 const API_KEY = process.env.REACT_APP_CMC_API_KEY;
@@ -17,17 +16,11 @@ const HomePage = () => {
   const [error, setError] = useState(null);
   const [showEMA, setShowEMA] = useState(false);
 
-  useEffect(() => {
-    fetchLiveData();
-    const interval = setInterval(fetchLiveData, 300000); // Fetch new data every 5 minutes
-    return () => clearInterval(interval);
-  }, []);
-
   const fetchLiveData = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get('/api/cryptocurrency/quotes/latest', {
+      const response = await axios.get('/v2/cryptocurrency/quotes/latest', {
         params: { id: TOKEN_ID },
         headers: {
           'X-CMC_PRO_API_KEY': API_KEY,
@@ -45,13 +38,19 @@ const HomePage = () => {
       setPriceChartData(mockHistoricalData.priceData);
       setVolumeChartData(mockHistoricalData.volumeData);
 
+      setLoading(false);
     } catch (error) {
-      console.error('Error fetching live data:', error); // Log the error to the console once
+      console.error('Error fetching live data:', error);
       setError('Failed to fetch data. Please try again later.');
-    } finally {
-      setLoading(false); // Ensure loading state is updated
+      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchLiveData();
+    const interval = setInterval(fetchLiveData, 300000); // Fetch new data every 5 minutes
+    return () => clearInterval(interval);
+  }, [fetchLiveData]);
 
   const generateMockHistoricalData = (currentPrice, days) => {
     const priceData = [];
@@ -84,6 +83,7 @@ const HomePage = () => {
 
   return (
     <div className="bg-gray-900 text-white min-h-screen font-sans">
+      {/* Hero Section */}
       <section className="pt-24 pb-16 px-4 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
         <div className="container mx-auto text-center">
           <h2 className="text-5xl font-bold mb-6 text-teal-400 glow">
@@ -107,6 +107,7 @@ const HomePage = () => {
         <div className="text-center text-red-400 my-10">{error}</div>
       ) : (
         <>
+          {/* Current Price and 24h Change */}
           <section className="py-8 px-4 bg-gray-800">
             <div className="container mx-auto text-center">
               <h3 className="text-3xl font-bold mb-4 text-teal-400 glow">JENNER Token</h3>
@@ -119,6 +120,7 @@ const HomePage = () => {
             </div>
           </section>
 
+          {/* Price Chart Section */}
           <section className="py-16 px-4 bg-gray-800" id="charts">
             <div className="container mx-auto">
               <h3 className="text-3xl font-bold mb-8 text-center text-teal-400 glow">
@@ -152,6 +154,7 @@ const HomePage = () => {
             </div>
           </section>
 
+          {/* Volume Chart Section */}
           <section className="py-16 px-4 bg-gray-900" id="volume-chart">
             <div className="container mx-auto">
               <h3 className="text-3xl font-bold mb-8 text-center text-teal-400 glow">
@@ -171,6 +174,7 @@ const HomePage = () => {
             </div>
           </section>
 
+          {/* Statistics Section */}
           <section className="py-16 px-4 bg-gray-800" id="statistics">
             <div className="container mx-auto">
               <h3 className="text-3xl font-bold mb-8 text-center text-teal-400 glow">
@@ -193,6 +197,7 @@ const HomePage = () => {
         </>
       )}
 
+      {/* Footer */}
       <footer className="bg-gray-900 py-8 px-4">
         <div className="container mx-auto text-center">
           <p className="text-teal-300">
