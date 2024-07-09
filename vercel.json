@@ -12,7 +12,16 @@
     }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/api/cryptocurrency/quotes/latest" },
-    { "src": "/(.*)", "dest": "/build/" }
-  ]
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/build/$1"
+    }
+  ],
+  "env": {
+    "NODE_OPTIONS": "--openssl-legacy-provider"
+  }
 }
