@@ -16,41 +16,41 @@ const HomePage = () => {
   const [error, setError] = useState(null);
   const [showEMA, setShowEMA] = useState(false);
 
-  const fetchLiveData = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await axios.get('/v2/cryptocurrency/quotes/latest', {
-        params: { id: TOKEN_ID },
-        headers: {
-          'X-CMC_PRO_API_KEY': API_KEY,
-        }
-      });
-
-      if (response.data.status.error_code !== 0) {
-        throw new Error(response.data.status.error_message);
-      }
-
-      const tokenData = response.data.data[TOKEN_ID];
-      setTokenInfo(tokenData);
-      
-      const mockHistoricalData = generateMockHistoricalData(tokenData.quote.USD.price, 30);
-      setPriceChartData(mockHistoricalData.priceData);
-      setVolumeChartData(mockHistoricalData.volumeData);
-
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching live data:', error);
-      setError('Failed to fetch data. Please try again later.');
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchLiveData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await axios.get('/v2/cryptocurrency/quotes/latest', {
+          params: { id: TOKEN_ID },
+          headers: {
+            'X-CMC_PRO_API_KEY': API_KEY,
+          }
+        });
+
+        if (response.data.status.error_code !== 0) {
+          throw new Error(response.data.status.error_message);
+        }
+
+        const tokenData = response.data.data[TOKEN_ID];
+        setTokenInfo(tokenData);
+        
+        const mockHistoricalData = generateMockHistoricalData(tokenData.quote.USD.price, 30);
+        setPriceChartData(mockHistoricalData.priceData);
+        setVolumeChartData(mockHistoricalData.volumeData);
+
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching live data:', error);
+        setError('Failed to fetch data. Please try again later.');
+        setLoading(false);
+      }
+    };
+
     fetchLiveData();
     const interval = setInterval(fetchLiveData, 300000); // Fetch new data every 5 minutes
     return () => clearInterval(interval);
-  }, [fetchLiveData]);
+  }, []);
 
   const generateMockHistoricalData = (currentPrice, days) => {
     const priceData = [];
