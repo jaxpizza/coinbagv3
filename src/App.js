@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import axios from 'axios';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { Menu, X } from 'lucide-react';
 import BlogPage from './BlogPage';
-import SocialsDropdown from './SocialsDropdown';
 import Header from './components/Header';
 
 const API_KEY = process.env.REACT_APP_CMC_API_KEY;
@@ -18,7 +16,7 @@ const HomePage = () => {
   const [error, setError] = useState(null);
   const [showEMA, setShowEMA] = useState(false);
 
-  const fetchLiveData = async () => {
+  const fetchLiveData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -46,13 +44,13 @@ const HomePage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchLiveData();
     const interval = setInterval(fetchLiveData, 300000); // Fetch new data every 5 minutes
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchLiveData]);
 
   const generateMockHistoricalData = (currentPrice, days) => {
     const priceData = [];
