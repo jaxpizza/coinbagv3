@@ -18,17 +18,11 @@ const HomePage = () => {
   const [error, setError] = useState(null);
   const [showEMA, setShowEMA] = useState(false);
 
-  useEffect(() => {
-    fetchLiveData();
-    const interval = setInterval(fetchLiveData, 300000); // Fetch new data every 5 minutes
-    return () => clearInterval(interval);
-  }, []);
-
   const fetchLiveData = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get('/v2/cryptocurrency/quotes/latest', {
+      const response = await axios.get('https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest', {
         params: { id: TOKEN_ID },
         headers: {
           'X-CMC_PRO_API_KEY': API_KEY,
@@ -41,18 +35,24 @@ const HomePage = () => {
 
       const tokenData = response.data.data[TOKEN_ID];
       setTokenInfo(tokenData);
-      
+
       const mockHistoricalData = generateMockHistoricalData(tokenData.quote.USD.price, 30);
       setPriceChartData(mockHistoricalData.priceData);
       setVolumeChartData(mockHistoricalData.volumeData);
 
-      setLoading(false);
     } catch (error) {
       console.error('Error fetching live data:', error);
       setError('Failed to fetch data. Please try again later.');
+    } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchLiveData();
+    const interval = setInterval(fetchLiveData, 300000); // Fetch new data every 5 minutes
+    return () => clearInterval(interval);
+  }, []);
 
   const generateMockHistoricalData = (currentPrice, days) => {
     const priceData = [];
