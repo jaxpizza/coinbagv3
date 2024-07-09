@@ -39,7 +39,7 @@ const HomePage = () => {
       setVolumeChartData(mockHistoricalData.volumeData);
 
     } catch (error) {
-      console.error('Error fetching live data:', error);
+      console.error('Error fetching live data:', error); // Log the error to the console
       setError('Failed to fetch data. Please try again later.');
     } finally {
       setLoading(false);
